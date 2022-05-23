@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "scripts": {
+    "prestart": "node src/saveCandles.js",
     "start": "nodemon src/app.js"
   },
   "keywords": [],
@@ -9,8 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server-express": "^3.6.7",
+    "ccxt": "^1.82.37",
     "express": "^4.17.3",
-    "graphql": "^16.3.0",
+    "graphql": "^15.8.0",
     "mongoose": "^6.3.0",
     "nodemon": "^2.0.15"
   }

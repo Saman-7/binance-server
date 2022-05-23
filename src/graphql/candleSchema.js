@@ -1,5 +1,5 @@
 const { gql } = require("apollo-server-express");
-const Candle = require("../models/candleStick");
+const { BTC_USDT, BTC_BNB } = require("../models/candleStick");
 
 //TypeDefs GraphQL
 const typeDefs = gql`
@@ -7,43 +7,49 @@ const typeDefs = gql`
     candleId: ID!
     pair: String!
     startTime: String!
-    endTime: String!
     open: Float!
-    high: Float
-    low: Float
-    close: Float
+    high: Float!
+    low: Float!
+    close: Float!
     interval: String!
-    volume: Float
-    isUpCandle: Boolean
+    volume: Float!
+  }
+
+  enum PAIRS {
+    BTC_USDT
+    BTC_BNB
   }
 
   type Query {
-    getCandles: [Candle]!
+    getPair(pair: PAIRS!): [Candle!]!
   }
 `;
+
+const pairToModel = {
+  BTC_USDT: BTC_USDT,
+  BTC_BNB: BTC_BNB,
+};
 
 //Resolvers GraphQL
 const resolvers = {
   Query: {
-    getCandles: async (parent, args, context, info) => {
-      const allCandles = await Candle.aggregate([
+    getPair: async (parent, args, context, info) => {
+      const candles = await pairToModel[args.pair].aggregate([
         {
           $project: {
             candleId: "$candle_id",
             pair: "$pair",
             startTime: "$start_time",
-            endTime: "$end_time",
             open: "$open",
             high: "$high",
             low: "$low",
             close: "$close",
             interval: "$interval",
             volume: "$volume",
-            isUpCandle: "$is_up_candle",
           },
         },
       ]);
-      return allCandles;
+      return candles;
     },
   },
 };
